@@ -6,19 +6,10 @@ import java.util.Random;
 
 public class MemoryObjectFactory {
 
-    public List<MemoryObject> createSmallSizeObjectsList(int size) {
+    public List<MemoryObject> createObjects(int numberOfObjects, int singleObjectSize) {
         List<MemoryObject> objects = new ArrayList<MemoryObject>();
-        for (int i = 0; i < size; i++) {
-            objects.add(createSmallSizeObject());
-        }
-
-        return objects;
-    }
-
-    public List<MemoryObject> createHugeSizeObjectsList(int size) {
-        List<MemoryObject> objects = new ArrayList<MemoryObject>();
-        for (int i = 0; i < size; i++) {
-            objects.add(createHugeObject());
+        for (int i = 0; i < numberOfObjects; i++) {
+            objects.add(createObject(singleObjectSize));
         }
 
         return objects;
@@ -27,22 +18,10 @@ public class MemoryObjectFactory {
     public List<MemoryObject> createRandomSizeObjectsList(int size) {
         List<MemoryObject> objects = new ArrayList<MemoryObject>();
         for (int i = 0; i < size; i++) {
-            objects.add(createRandomSizeObject());
+            objects.add(createObject(new Random().nextInt()));
         }
 
         return objects;
-    }
-
-    public MemoryObject createRandomSizeObject() {
-        return createObject(new Random().nextInt());
-    }
-
-    public MemoryObject createSmallSizeObject() {
-        return createObject(1000);
-    }
-
-    public MemoryObject createHugeObject() {
-        return createObject(Integer.MAX_VALUE / 100);
     }
 
     protected MemoryObject createObject(int size) {

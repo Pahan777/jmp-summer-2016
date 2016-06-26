@@ -7,12 +7,16 @@ public class ExpiredReference<T> {
 
     public ExpiredReference(T reference, long holdTime) {
         expirationTime = System.currentTimeMillis() + holdTime;
+        this.reference = reference;
     }
 
-    public void expire() {
+    public boolean expire() {
         if (System.currentTimeMillis() >= expirationTime) {
             reference = null;
+            return true;
         }
+
+        return false;
     }
 
     public T get() {

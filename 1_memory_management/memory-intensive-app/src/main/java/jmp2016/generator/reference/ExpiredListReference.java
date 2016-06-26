@@ -2,25 +2,9 @@ package jmp2016.generator.reference;
 
 import java.util.List;
 
-public class ExpiredListReference<T> {
+public class ExpiredListReference<T> extends ExpiredReference<List<T>> {
 
-    protected final long expirationTime;
-    protected List<T> listReference;
-
-    public ExpiredListReference(List<T> list, long holdTime) {
-        expirationTime = System.currentTimeMillis() + holdTime;
-        listReference = list;
-    }
-
-    public boolean expire() {
-        if (System.currentTimeMillis() >= expirationTime) {
-            listReference = null;
-            return true;
-        }
-        return false;
-    }
-
-    public List<T> get() {
-        return listReference;
+    public ExpiredListReference(List<T> reference, long holdTime) {
+        super(reference, holdTime);
     }
 }
