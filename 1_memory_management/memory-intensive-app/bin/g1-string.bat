@@ -1,0 +1,1 @@
+java -jar -server -Xmx5g -XX:+UseG1GC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintGCApplicationStoppedTime -XX:+PrintGCCause -XX:+PrintTenuringDistribution -Xloggc:log\g1-string-dd-gc.log ../target/memory-intensive-app-1.0-SNAPSHOT-jar-with-dependencies.jar string 30000 10 0:50,50:50,800:50,900:50

@@ -1,3 +1,1 @@
-java -jar -server -Xmx5g -XX:+UseG1GC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintGCApplicationStoppedTime -XX:+PrintGCCause -XX:+PrintTenuringDistribution -Xloggc:log\g1-gc.log ../target/memory-intensive-app-1.0-SNAPSHOT-jar-with-dependencies.jar 3000 2000 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,100,200,900,900,900,900,900,900,900,900,900,900,900,900,900,900,900,900,900,900,900,900,900,900,900,900,900,900,900,900,900,900,900,900,900
-
-# -XX:+PrintReferenceGC
+java -jar -server -Xmx5g -XX:+UseG1GC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintGCApplicationStoppedTime -XX:+PrintGCCause -XX:+PrintTenuringDistribution -Xloggc:log\g1-gc.log ../target/memory-intensive-app-1.0-SNAPSHOT-jar-with-dependencies.jar byte 3000 1000 0:50,50:50,800:50,900:50
