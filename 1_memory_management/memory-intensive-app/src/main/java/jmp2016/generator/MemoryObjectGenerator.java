@@ -1,13 +1,11 @@
 package jmp2016.generator;
 
 import jmp2016.generator.reference.ExpiredListReference;
-import jmp2016.memoryobject.AbstractMemoryObjectFactory;
+import jmp2016.memoryobject.MemoryObjectWithReferences;
+import jmp2016.memoryobject.factory.AbstractMemoryObjectFactory;
 import jmp2016.memoryobject.MemoryObject;
-import jmp2016.memoryobject.ByteMemoryObjectFactory;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class MemoryObjectGenerator extends Thread {
 
@@ -24,7 +22,7 @@ public class MemoryObjectGenerator extends Thread {
      * Set of expired references
      * Each reference refers to list of MemoryObjects
      */
-    protected Set<ExpiredListReference<MemoryObject>> references = new HashSet<ExpiredListReference<MemoryObject>>();
+    protected Set<ExpiredListReference<MemoryObjectWithReferences>> references = new HashSet<>();
 
     public MemoryObjectGenerator(long referenceHoldTimeMs, int objectsPerSecond, int singleObjectSize, AbstractMemoryObjectFactory factory) {
         this.referenceHoldTimeMs = referenceHoldTimeMs;
@@ -38,7 +36,9 @@ public class MemoryObjectGenerator extends Thread {
     public void run() {
         while (true) {
             // Create objects
-            List<MemoryObject> objects = factory.createObjects(objectsPerSecond / 200, singleObjectSize);
+            List<MemoryObjectWithReferences> objects = factory.createObjects(objectsPerSecond / 200, singleObjectSize);
+
+            createReferencesBetweenObjects(objects, 10);
             // Add references
             references.add(new ExpiredListReference<>(objects, referenceHoldTimeMs));
 
@@ -56,13 +56,30 @@ public class MemoryObjectGenerator extends Thread {
         }
     }
 
+    /**
+     * Creates many references between objects so GC will have more effort
+     */
+    private void createReferencesBetweenObjects(List<MemoryObjectWithReferences> objects, int referencesCountPerObject) {
+        for (MemoryObjectWithReferences object : objects) {
+            for (int i = 0; i < referencesCountPerObject; i++) {
+                object.addReference(getRandomObject(objects));
+            }
+        }
+    }
+
+    protected MemoryObjectWithReferences getRandomObject(List<MemoryObjectWithReferences> list) {
+        int randomNumber = Math.abs(new Random().nextInt());
+        int randomObjectIndex = randomNumber % (list.size() - 1);
+        return list.get(randomObjectIndex);
+    }
+
     protected void expireReferences() {
-        Set<ExpiredListReference<MemoryObject>> expiredReferenceObjectLinks = new HashSet<ExpiredListReference<MemoryObject>>();
+        Set<ExpiredListReference<MemoryObjectWithReferences>> expiredReferenceObjectLinks = new HashSet<>();
 
         long expiredObjectsSize = 0;
         long expiredObjectsCount = 0;
 
-        for (ExpiredListReference<MemoryObject> listReference : references) {
+        for (ExpiredListReference<MemoryObjectWithReferences> listReference : references) {
             long size = MemoryObject.getSize(listReference.get());
             int count = listReference.get().size();
 
@@ -79,12 +96,12 @@ public class MemoryObjectGenerator extends Thread {
         references.removeAll(expiredReferenceObjectLinks);
     }
 
-    protected void printAllocatedObjectsStat(Set<ExpiredListReference<MemoryObject>> references) {
+    protected void printAllocatedObjectsStat(Set<ExpiredListReference<MemoryObjectWithReferences>> references) {
         long size = 0;
         long count = 0;
 
-        for (ExpiredListReference<MemoryObject> reference : references) {
-            size += MemoryObject.getSize(reference.get());
+        for (ExpiredListReference<MemoryObjectWithReferences> reference : references) {
+            size += MemoryObjectWithReferences.getSize(reference.get());
             count += reference.get().size();
         }
 

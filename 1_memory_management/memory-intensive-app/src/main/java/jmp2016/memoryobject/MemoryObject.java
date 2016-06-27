@@ -25,7 +25,7 @@ public class MemoryObject {
         }
     }
 
-    public static long getSize(List<MemoryObject> objectList) {
+    public static long getSize(List<MemoryObjectWithReferences> objectList) {
         long size = 0;
         for (MemoryObject object : objectList) {
             size += object.getSize();

@@ -1,9 +1,9 @@
 package jmp2016;
 
 import jmp2016.generator.MemoryObjectGenerator;
-import jmp2016.memoryobject.AbstractMemoryObjectFactory;
-import jmp2016.memoryobject.ByteMemoryObjectFactory;
-import jmp2016.memoryobject.StringMemoryObjectFactory;
+import jmp2016.memoryobject.factory.AbstractMemoryObjectFactory;
+import jmp2016.memoryobject.factory.ByteMemoryObjectFactory;
+import jmp2016.memoryobject.factory.StringMemoryObjectFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;

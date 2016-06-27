@@ -1,5 +1,6 @@
-package jmp2016.memoryobject;
+package jmp2016.memoryobject.factory;
 
+import jmp2016.memoryobject.MemoryObjectWithReferences;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.Random;
@@ -14,7 +15,7 @@ public class StringMemoryObjectFactory extends AbstractMemoryObjectFactory {
      * Generates strings like: 0000000111111100000000000001111111
      */
     @Override
-    public MemoryObject createObject(int size) {
+    public MemoryObjectWithReferences createObject(int size) {
         int chunkSize = size / 20;
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < 20; i++) {
@@ -25,6 +26,6 @@ public class StringMemoryObjectFactory extends AbstractMemoryObjectFactory {
             }
         }
 
-        return new MemoryObject(builder.toString());
+        return new MemoryObjectWithReferences(builder.toString());
     }
 }
