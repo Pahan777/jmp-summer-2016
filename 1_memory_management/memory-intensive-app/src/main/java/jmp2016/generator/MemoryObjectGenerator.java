@@ -38,7 +38,7 @@ public class MemoryObjectGenerator extends Thread {
             // Create objects
             List<MemoryObjectWithReferences> objects = factory.createObjects(objectsPerSecond / 200, singleObjectSize);
 
-            createReferencesBetweenObjects(objects, 10);
+            createReferencesBetweenObjects(getAllExistedObjects(), objects, 10);
             // Add references
             references.add(new ExpiredListReference<>(objects, referenceHoldTimeMs));
 
@@ -59,10 +59,10 @@ public class MemoryObjectGenerator extends Thread {
     /**
      * Creates many references between objects so GC will have more effort
      */
-    private void createReferencesBetweenObjects(List<MemoryObjectWithReferences> objects, int referencesCountPerObject) {
-        for (MemoryObjectWithReferences object : objects) {
+    private void createReferencesBetweenObjects(List<MemoryObjectWithReferences> objectsToAddReferences, List<MemoryObjectWithReferences> references, int referencesCountPerObject) {
+        for (MemoryObjectWithReferences object : objectsToAddReferences) {
             for (int i = 0; i < referencesCountPerObject; i++) {
-                object.addReference(getRandomObject(objects));
+                object.addReference(getRandomObject(references));
             }
         }
     }
@@ -71,6 +71,14 @@ public class MemoryObjectGenerator extends Thread {
         int randomNumber = Math.abs(new Random().nextInt());
         int randomObjectIndex = randomNumber % (list.size() - 1);
         return list.get(randomObjectIndex);
+    }
+
+    protected List<MemoryObjectWithReferences> getAllExistedObjects() {
+        List<MemoryObjectWithReferences> objects = new ArrayList<>();
+        for (ExpiredListReference<MemoryObjectWithReferences> reference : references) {
+            objects.addAll(reference.get());
+        }
+        return objects;
     }
 
     protected void expireReferences() {
