@@ -1,23 +1,22 @@
 package jmp2016.generator;
 
 import jmp2016.generator.reference.ExpiredListReference;
+import jmp2016.memoryobject.AbstractMemoryObjectFactory;
 import jmp2016.memoryobject.MemoryObject;
-import jmp2016.memoryobject.MemoryObjectFactory;
+import jmp2016.memoryobject.ByteMemoryObjectFactory;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class MemoryObjectGenerator extends Thread {
 
-    protected final MemoryObjectFactory factory = new MemoryObjectFactory();
+    protected final AbstractMemoryObjectFactory factory;
 
     /**
      * How much time object keeps reference
      */
-    protected final long referenceHoldTime;
+    protected final long referenceHoldTimeMs;
     protected final int objectsPerSecond;
     protected final int singleObjectSize;
 
@@ -27,29 +26,30 @@ public class MemoryObjectGenerator extends Thread {
      */
     protected Set<ExpiredListReference<MemoryObject>> references = new HashSet<ExpiredListReference<MemoryObject>>();
 
-    public MemoryObjectGenerator(long referenceHoldTime, int objectsPerSecond, int singleObjectSize) {
-        this.referenceHoldTime = referenceHoldTime;
+    public MemoryObjectGenerator(long referenceHoldTimeMs, int objectsPerSecond, int singleObjectSize, AbstractMemoryObjectFactory factory) {
+        this.referenceHoldTimeMs = referenceHoldTimeMs;
         this.objectsPerSecond = objectsPerSecond;
         this.singleObjectSize = singleObjectSize;
-        setName(referenceHoldTime + " s");
+        this.factory = factory;
+        setName(referenceHoldTimeMs + " s");
     }
 
     @Override
     public void run() {
         while (true) {
             // Create objects
-            List<MemoryObject> objects = factory.createObjects(objectsPerSecond / 10, singleObjectSize);
+            List<MemoryObject> objects = factory.createObjects(objectsPerSecond / 200, singleObjectSize);
             // Add references
-            references.add(new ExpiredListReference<>(objects, referenceHoldTime));
-            // Expire references if any
+            references.add(new ExpiredListReference<>(objects, referenceHoldTimeMs));
 
+            // Expire references if any
             expireReferences();
 
             printAllocatedObjectsStat(references);
 
             try {
                 // Objects are created 10 times per second
-                sleep(100);
+                sleep(5);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -105,6 +105,7 @@ public class MemoryObjectGenerator extends Thread {
     }
 
     protected void log(String message) {
+        // TODO print only once per second
 //        System.out.println(getName() + "> " + new SimpleDateFormat("hh:mm:ss SSS").format(new Date()) + " " + message);
     }
 }
